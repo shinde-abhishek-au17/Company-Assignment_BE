@@ -1,8 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
+const mongoose = require("mongoose");
+const app = express();
 
-
+// nodemailer
 const transporter = nodemailer.createTransport({
 	host:'smtp.gmail.com',
 	port:587,
@@ -14,14 +16,8 @@ const transporter = nodemailer.createTransport({
 });
 
 
-/////////////////
 
-
-
-
-
-//////////////////////////////
-const mongoose = require("mongoose");
+// mongoose connected
 mongoose.connect("mongodb://localhost:27017/signUp");
 const db = mongoose.connection;
 db.on("error", console.log.bind(console, "connection error"));
@@ -30,9 +26,8 @@ db.once("open", function () {
 });
 
 
-/////////////////////////////
 
-const app = express();
+// middlewares
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -41,6 +36,11 @@ app.use(
     extended: true,
   })
 );
+
+
+
+
+// routes
 
 app.post("/signup", function (req, res) {
   const name = req.body.name;
@@ -54,7 +54,9 @@ app.post("/signup", function (req, res) {
     password: pass,
     phone: phone,
   };
+
   
+  // inserting data into collection
 db.collection("detailsUser").insertOne(data, function (err, collection) {
 	  if (!!collection){
 		const mailOptions = {
